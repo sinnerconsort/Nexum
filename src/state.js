@@ -24,6 +24,7 @@ export function getSettings() {
     if (typeof s.activePackId !== 'string') s.activePackId = DEFAULTS.activePackId;
     if (typeof s.messageTokens !== 'number') s.messageTokens = DEFAULTS.messageTokens;
     if (typeof s.forumTokens !== 'number') s.forumTokens = DEFAULTS.forumTokens;
+    if (typeof s.liveBleed !== 'boolean') s.liveBleed = DEFAULTS.liveBleed;
     if (!s.fab || typeof s.fab !== 'object') s.fab = { ...DEFAULTS.fab };
     if (typeof s.fab.top !== 'number') s.fab.top = DEFAULTS.fab.top;
     if (typeof s.fab.left !== 'number') s.fab.left = DEFAULTS.fab.left;
