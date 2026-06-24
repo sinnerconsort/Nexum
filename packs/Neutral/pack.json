@@ -1,0 +1,31 @@
+{
+    "pack_format": 1,
+    "id": "neutral",
+    "name": "Nexum",
+    "author": "sinnerconsort",
+    "engine_min": "0.1.0",
+    "generation": { "mode": "independent" },
+
+    "skin": {
+        "tokens": {
+            "--nexum-bg": "#101012",
+            "--nexum-surface": "#1b1b21",
+            "--nexum-tile": "#26262f",
+            "--nexum-accent": "#7c8cff",
+            "--nexum-accent-2": "#a9b4ff",
+            "--nexum-text": "#ececf0",
+            "--nexum-muted": "#8a8a94",
+            "--nexum-glow": "rgba(124,140,255,0.5)"
+        },
+        "effects": []
+    },
+
+    "home": {
+        "apps": [
+            { "app": "messages", "icon": "comment", "label": "Messages" },
+            { "app": "search",   "icon": "magnifying-glass", "label": "Search" },
+            { "app": "weather",  "icon": "cloud", "label": "Weather" },
+            { "app": "games",    "icon": "dice", "label": "Games", "games": ["knucklebones"] }
+        ]
+    }
+}
