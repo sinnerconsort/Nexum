@@ -1,81 +1,28 @@
 // Nexum — apps/messages.js
-// The DM channel. Contact list -> thread. Replies generate via isolated calls
-// (no main-chat pollution). Threads persist per-contact in global settings, so a
-// conversation survives chat-switches — the groundwork for cross-chat continuity.
-// Contacts come from the active pack; with the Neutral pack (no contacts) it falls
-// back to whatever character the current ST chat is with, so it works out of the box.
+// The DM surface. Reads its roster from contacts.js and its history from
+// conversations.js (group-ready, 1:1 for now). Replies generate via isolated calls
+// and trickle in as multiple bubbles. Accepts entry.startContactId so the Contacts
+// app can hand off straight into a thread.
 
-import { getSettings, saveSettings } from '../state.js';
+import { getSettings } from '../state.js';
 import { isolatedGenerate, stripReasoning } from '../generate.js';
 import { notify } from '../notifications.js';
 import { isPhoneOpen } from '../chassis.js';
+import { getRoster } from '../contacts.js';
+import { getConversation, addMessage } from '../conversations.js';
 
 function stx() { return window.SillyTavern?.getContext?.() ?? null; }
 
-// ---- thread store (global, per-contact) ----
-function threads() {
-    const s = getSettings();
-    if (!s.threads || typeof s.threads !== 'object') s.threads = {};
-    return s.threads;
-}
-function getThread(id) {
-    const t = threads();
-    if (!Array.isArray(t[id])) t[id] = [];
-    return t[id];
-}
+// 1:1 conversation id == the contact id.
+function convMessages(ct) { return getConversation(ct.id, [ct.id]).messages; }
 
-// ---- contact resolution ----
-function findCard(name) {
-    const c = stx();
-    if (!c?.characters || !name) return null;
-    return c.characters.find((x) => x.name === name) || null;
-}
-
-function makeContact({ id, name, handle, card, voice }) {
-    const c = stx();
-    let persona = '';
-    if (card) {
-        const parts = [];
-        if (card.description) parts.push(card.description);
-        if (card.personality) parts.push(card.personality);
-        persona = parts.join('\n');
-        if (c?.substituteParams) { try { persona = c.substituteParams(persona); } catch (_) { /* ignore */ } }
-    } else if (voice) {
-        persona = voice;
-    }
-    if (persona.length > 3500) persona = persona.slice(0, 3500);
-    let avatar = '';
-    if (card?.avatar && c?.getThumbnailUrl) {
-        try { avatar = c.getThumbnailUrl('avatar', card.avatar); } catch (_) { /* ignore */ }
-    }
-    return { id: String(id), name: name || handle || 'Unknown', handle: handle || '', persona, avatar };
-}
-
-function resolveContacts(pack) {
-    const c = stx();
-    const packContacts = pack?.contacts || [];
-    if (packContacts.length) {
-        return packContacts.map((pc) => makeContact({
-            id: pc.handle || pc.character || pc.name,
-            name: pc.character || pc.name || pc.handle,
-            handle: pc.handle || '',
-            card: findCard(pc.character || pc.name),
-            voice: pc.voice || '',
-        }));
-    }
-    // Fallback: the character of the active ST chat.
-    const ch = c?.characters?.[c?.characterId];
-    if (ch) return [makeContact({ id: ch.avatar || ch.name, name: ch.name, handle: '', card: ch })];
-    return [];
-}
-
-// ---- module-level view state (single phone instance) ----
 let view = 'list';
 let activeId = null;
 
 export function mountMessages(mountEl, ctx) {
     const screen = ctx?.screen || null;
-    const contacts = resolveContacts(ctx?.pack);
+    const pack = ctx?.pack || null;
+    const roster = getRoster(pack);
 
     function showList() {
         view = 'list'; activeId = null;
@@ -85,15 +32,15 @@ export function mountMessages(mountEl, ctx) {
 
     function renderList() {
         mountEl.innerHTML = '';
-        if (!contacts.length) {
-            mountEl.innerHTML = '<div class="nexum-empty">No contacts yet.<br><small>Open an ST chat with a character, or load a world pack with contacts.</small></div>';
+        if (!roster.length) {
+            mountEl.innerHTML = '<div class="nexum-empty">No contacts yet.<br><small>Add someone in Contacts, or open an ST chat with a character.</small></div>';
             return;
         }
         const list = document.createElement('div');
         list.className = 'nexum-msg-list';
-        for (const ct of contacts) {
-            const th = getThread(ct.id);
-            const last = th[th.length - 1];
+        for (const ct of roster) {
+            const msgs = convMessages(ct);
+            const last = msgs[msgs.length - 1];
             const row = document.createElement('button');
             row.type = 'button';
             row.className = 'nexum-msg-row';
@@ -122,7 +69,7 @@ export function mountMessages(mountEl, ctx) {
 
         const scroll = document.createElement('div');
         scroll.className = 'nexum-msg-scroll';
-        for (const m of getThread(ct.id)) scroll.appendChild(bubble(m));
+        for (const m of convMessages(ct)) scroll.appendChild(bubble(m));
         wrap.appendChild(scroll);
 
         const bar = document.createElement('div');
@@ -145,9 +92,7 @@ export function mountMessages(mountEl, ctx) {
             const text = input.value.trim();
             if (!text) return;
             input.value = '';
-            const thread = getThread(ct.id);
-            thread.push({ from: 'user', text, ts: Date.now() });
-            saveSettings();
+            addMessage(ct.id, { from: 'user', senderId: null, text, ts: Date.now() }, [ct.id]);
             scroll.appendChild(bubble({ from: 'user', text }));
             scrollDown(scroll);
 
@@ -157,17 +102,13 @@ export function mountMessages(mountEl, ctx) {
             send.disabled = true; input.disabled = true;
 
             try {
-                const reply = stripReasoning(await generateReply(ct, thread)) || '…';
+                const reply = stripReasoning(await generateReply(ct)) || '…';
                 typing.remove();
                 const parts = splitReply(reply);
-                // Persist every part up front so they survive navigating away mid-reveal.
-                for (const p of parts) thread.push({ from: 'char', text: p, ts: Date.now() });
-                saveSettings();
+                for (const p of parts) addMessage(ct.id, { from: 'char', senderId: ct.id, text: p, ts: Date.now() }, [ct.id]);
 
                 const looking = () => isPhoneOpen() && view === 'thread' && activeId === ct.id;
                 if (looking()) {
-                    // Reveal bubbles one at a time, with a short typing beat between —
-                    // so a multi-paragraph reply trickles in like real texts.
                     for (let i = 0; i < parts.length; i++) {
                         if (i > 0) {
                             const t = typingEl();
@@ -199,10 +140,13 @@ export function mountMessages(mountEl, ctx) {
         scrollDown(scroll);
     }
 
-    showList();
+    // Direct-open handoff from the Contacts app.
+    const startId = ctx?.entry?.startContactId;
+    const target = startId ? roster.find((c) => c.id === startId) : null;
+    if (target) openThread(target); else showList();
 }
 
-async function generateReply(ct, thread) {
+async function generateReply(ct) {
     const c = stx();
     const userName = c?.name1 || 'the user';
     const sys = `You are ${ct.name}. Stay fully in character.\n\n${ct.persona}\n\n`
@@ -210,7 +154,7 @@ async function generateReply(ct, thread) {
         + `in a casual texting voice: short, natural, in character. No narration, no asterisk actions, `
         + `no quotation marks wrapping the whole message. Never speak or act for ${userName}.`;
     const msgs = [{ role: 'system', content: sys }];
-    for (const m of thread) msgs.push({ role: m.from === 'user' ? 'user' : 'assistant', content: m.text });
+    for (const m of convMessages(ct)) msgs.push({ role: m.from === 'user' ? 'user' : 'assistant', content: m.text });
     return isolatedGenerate(msgs);
 }
 
