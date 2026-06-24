@@ -65,13 +65,13 @@ export function renderHome() {
 export function openApp(name, entry = {}) {
     if (!viewportEl) return;
 
-    // Real app available? Hand it the mount node and the entry config.
+    // Real app available? Hand it the mount node, config, and a screen controller.
     if (appRegistry[name]) {
         const screen = buildAppScreen(entry.label || name);
         viewportEl.innerHTML = '';
         viewportEl.appendChild(screen.wrapper);
         try {
-            appRegistry[name](screen.body, { pack: currentPack, entry });
+            appRegistry[name](screen.body, { pack: currentPack, entry, screen: screen.controller });
         } catch (e) {
             warn(`app "${name}" failed to render:`, e);
             screen.body.innerHTML = '<div class="nexum-empty">This app hit a snag. Tap back and try again.</div>';
@@ -90,6 +90,8 @@ export function openApp(name, entry = {}) {
 }
 
 // A screen = a header with a back button + a body the app fills.
+// The controller lets an app retitle the header and redirect the back button
+// (e.g. Messages: list -> back goes home; thread -> back goes to the list).
 function buildAppScreen(title) {
     const wrapper = document.createElement('div');
     wrapper.className = 'nexum-screen';
@@ -97,11 +99,12 @@ function buildAppScreen(title) {
     const header = document.createElement('div');
     header.className = 'nexum-screen-header';
 
+    let backHandler = renderHome;
     const back = document.createElement('button');
     back.type = 'button';
     back.className = 'nexum-back';
     back.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
-    back.addEventListener('click', (e) => { e.preventDefault(); renderHome(); });
+    back.addEventListener('click', (e) => { e.preventDefault(); backHandler(); });
 
     const h = document.createElement('span');
     h.className = 'nexum-screen-title';
@@ -115,7 +118,13 @@ function buildAppScreen(title) {
 
     wrapper.appendChild(header);
     wrapper.appendChild(body);
-    return { wrapper, body };
+
+    const controller = {
+        setTitle: (t) => { h.textContent = t; },
+        setBack: (fn) => { backHandler = (typeof fn === 'function') ? fn : renderHome; },
+        home: renderHome,
+    };
+    return { wrapper, body, controller };
 }
 
 function escapeHtml(s) {

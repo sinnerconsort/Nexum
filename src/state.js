@@ -22,6 +22,7 @@ export function getSettings() {
     // Defensive fill — add any missing keys without clobbering existing ones.
     if (typeof s.enabled !== 'boolean') s.enabled = DEFAULTS.enabled;
     if (typeof s.activePackId !== 'string') s.activePackId = DEFAULTS.activePackId;
+    if (typeof s.messageTokens !== 'number') s.messageTokens = DEFAULTS.messageTokens;
     if (!s.fab || typeof s.fab !== 'object') s.fab = { ...DEFAULTS.fab };
     if (typeof s.fab.top !== 'number') s.fab.top = DEFAULTS.fab.top;
     if (typeof s.fab.left !== 'number') s.fab.left = DEFAULTS.fab.left;

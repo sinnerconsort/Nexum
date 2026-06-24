@@ -11,6 +11,7 @@ export const EXT_URL = new URL('../', import.meta.url).href;
 export const DEFAULTS = {
     enabled: true,
     activePackId: 'neutral',
+    messageTokens: 1000,
     fab: {
         // top/left ONLY. Never bottom/right (ST's transformed body poisons those).
         top: 96,
