@@ -14,6 +14,7 @@ import { initNotifications, notify, clearNotifications } from './src/notificatio
 import { openApp, registerApp } from './src/router.js';
 import { mountKnucklebones } from './src/apps/knucklebones.js';
 import { mountMessages } from './src/apps/messages.js';
+import { mountContacts } from './src/apps/contacts.js';
 
 let keepaliveTimer = null;
 
@@ -31,6 +32,7 @@ async function initUI() {
     // Games icon -> knucklebones (only game for now; a picker can come later).
     registerApp('games', (mountEl) => mountKnucklebones(mountEl));
     registerApp('messages', mountMessages);
+    registerApp('contacts', mountContacts);
     createFab();
     await applyActivePack();
     startKeepalive();

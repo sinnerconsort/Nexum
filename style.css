@@ -568,3 +568,86 @@
 @media (prefers-reduced-motion: reduce) {
     #nexum-phone .nexum-bubble.typing span { animation: none; }
 }
+
+/* ---- Contacts ---- */
+#nexum-phone .nexum-ct-wrap { display: flex; flex-direction: column; }
+#nexum-phone .nexum-ct-add {
+    margin: 10px 14px;
+    padding: 9px 14px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--nx-accent) 35%, transparent);
+    background: color-mix(in srgb, var(--nx-accent) 12%, transparent);
+    color: var(--nx-accent);
+    font: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+}
+#nexum-phone .nexum-ct-list { display: flex; flex-direction: column; }
+#nexum-phone .nexum-ct-row {
+    display: flex; align-items: center;
+    border-bottom: 1px solid color-mix(in srgb, var(--nx-muted) 14%, transparent);
+}
+#nexum-phone .nexum-ct-open {
+    flex: 1 1 auto;
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    background: none; border: none; cursor: pointer;
+    text-align: left; color: var(--nx-text); font: inherit;
+    min-width: 0;
+}
+#nexum-phone .nexum-ct-open:active { background: color-mix(in srgb, var(--nx-accent) 10%, transparent); }
+#nexum-phone .nexum-ct-meta { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+#nexum-phone .nexum-ct-name { font-weight: 600; font-size: 14px; }
+#nexum-phone .nexum-ct-handle { font-size: 11px; color: var(--nx-accent); }
+#nexum-phone .nexum-ct-source {
+    font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--nx-muted);
+}
+#nexum-phone .nexum-ct-del {
+    flex: 0 0 auto;
+    background: none; border: none; cursor: pointer;
+    color: var(--nx-muted); font-size: 14px; padding: 12px 14px;
+}
+#nexum-phone .nexum-ct-del:active { color: #ff6b6b; }
+
+/* add form */
+#nexum-phone .nexum-ct-form {
+    margin: 0 14px 10px;
+    padding: 10px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--nx-tile) 50%, transparent);
+    display: flex; flex-direction: column; gap: 8px;
+}
+#nexum-phone .nexum-ct-modes { display: flex; gap: 6px; }
+#nexum-phone .nexum-ct-tab {
+    flex: 1 1 0; padding: 6px; border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--nx-muted) 20%, transparent);
+    background: transparent; color: var(--nx-muted);
+    font: inherit; font-size: 12px; cursor: pointer;
+}
+#nexum-phone .nexum-ct-tab.active {
+    background: var(--nx-accent); color: #fff; border-color: transparent;
+}
+#nexum-phone .nexum-ct-fields { display: flex; flex-direction: column; gap: 7px; }
+#nexum-phone .nexum-ct-input,
+#nexum-phone .nexum-ct-select,
+#nexum-phone .nexum-ct-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--nx-bg);
+    border: 1px solid color-mix(in srgb, var(--nx-muted) 22%, transparent);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--nx-text);
+    font: inherit; font-size: 13px;
+    outline: none;
+}
+#nexum-phone .nexum-ct-input:focus,
+#nexum-phone .nexum-ct-select:focus,
+#nexum-phone .nexum-ct-textarea:focus { border-color: var(--nx-accent); }
+#nexum-phone .nexum-ct-textarea { resize: vertical; }
+#nexum-phone .nexum-ct-save {
+    align-self: flex-end;
+    padding: 7px 18px; border-radius: 9px; border: none;
+    background: var(--nx-accent); color: #fff;
+    font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+}
