@@ -9,6 +9,7 @@ let phoneEl = null;
 let viewportEl = null;
 let carrierEl = null;
 let clockEl = null;
+let stripEl = null;
 let clockTimer = null;
 let isOpen = false;
 
@@ -36,6 +37,7 @@ export function buildPhone() {
                 <i class="fa-solid fa-battery-three-quarters"></i>
             </span>
         </div>
+        <div class="nexum-notif" aria-live="polite"></div>
         <div class="nexum-viewport"></div>
         <div class="nexum-homebar" role="button" aria-label="Close" title="Close"></div>
     `;
@@ -46,6 +48,7 @@ export function buildPhone() {
     viewportEl = phoneEl.querySelector('.nexum-viewport');
     carrierEl = phoneEl.querySelector('.nexum-carrier');
     clockEl = phoneEl.querySelector('.nexum-clock');
+    stripEl = phoneEl.querySelector('.nexum-notif');
 
     phoneEl.querySelector('.nexum-homebar')
         .addEventListener('click', () => closePhone());
@@ -56,6 +59,7 @@ export function buildPhone() {
 
 export function getPhoneRoot() { return phoneEl; }
 export function getViewport() { return viewportEl; }
+export function getStrip() { return stripEl; }
 
 // Called after a pack is loaded + skinned, to populate the home screen.
 export function renderPack(pack) {
