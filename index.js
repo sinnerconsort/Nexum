@@ -15,6 +15,7 @@ import { openApp, registerApp } from './src/router.js';
 import { mountKnucklebones } from './src/apps/knucklebones.js';
 import { mountMessages } from './src/apps/messages.js';
 import { mountContacts } from './src/apps/contacts.js';
+import { mountForum } from './src/apps/forum.js';
 
 let keepaliveTimer = null;
 
@@ -33,6 +34,7 @@ async function initUI() {
     registerApp('games', (mountEl) => mountKnucklebones(mountEl));
     registerApp('messages', mountMessages);
     registerApp('contacts', mountContacts);
+    registerApp('forum', mountForum);
     createFab();
     await applyActivePack();
     startKeepalive();

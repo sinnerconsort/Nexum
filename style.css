@@ -651,3 +651,117 @@
     background: var(--nx-accent); color: #fff;
     font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
 }
+
+/* ---- Forum ---- */
+#nexum-phone .nexum-fr-boards { display: flex; flex-direction: column; }
+#nexum-phone .nexum-fr-board {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 12px 14px; text-align: left; cursor: pointer;
+    background: none; border: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--nx-muted) 14%, transparent);
+    color: var(--nx-text); font: inherit;
+}
+#nexum-phone .nexum-fr-board:active { background: color-mix(in srgb, var(--nx-accent) 10%, transparent); }
+#nexum-phone .nexum-fr-board-name { font-weight: 700; font-size: 15px; color: var(--nx-accent); }
+#nexum-phone .nexum-fr-board-desc { font-size: 12px; color: var(--nx-muted); }
+#nexum-phone .nexum-fr-board-count { font-size: 11px; color: var(--nx-muted); margin-top: 2px; }
+
+#nexum-phone .nexum-fr-bar {
+    display: flex; gap: 8px; padding: 8px 12px;
+    border-bottom: 1px solid color-mix(in srgb, var(--nx-accent) 12%, transparent);
+    flex-wrap: wrap;
+}
+#nexum-phone .nexum-fr-action {
+    flex: 1 1 auto;
+    padding: 8px 10px; border-radius: 9px;
+    border: 1px solid color-mix(in srgb, var(--nx-accent) 30%, transparent);
+    background: color-mix(in srgb, var(--nx-accent) 10%, transparent);
+    color: var(--nx-accent); font: inherit; font-size: 12px; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+}
+#nexum-phone .nexum-fr-action:active { background: color-mix(in srgb, var(--nx-accent) 22%, transparent); }
+
+#nexum-phone .nexum-fr-threadlist { display: flex; flex-direction: column; }
+#nexum-phone .nexum-fr-thread-row {
+    display: flex; flex-direction: column; gap: 3px;
+    padding: 11px 14px; text-align: left; cursor: pointer;
+    background: none; border: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--nx-muted) 12%, transparent);
+    color: var(--nx-text); font: inherit;
+}
+#nexum-phone .nexum-fr-thread-row:active { background: color-mix(in srgb, var(--nx-accent) 10%, transparent); }
+#nexum-phone .nexum-fr-thread-title { font-weight: 600; font-size: 14px; }
+#nexum-phone .nexum-fr-thread-meta { font-size: 11px; color: var(--nx-muted); }
+
+/* thread view */
+#nexum-phone .nexum-fr-thread { display: flex; flex-direction: column; height: 100%; }
+#nexum-phone .nexum-fr-posts { flex: 1 1 auto; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 10px 12px; }
+#nexum-phone .nexum-fr-thread-head {
+    font-weight: 700; font-size: 15px; color: var(--nx-text);
+    padding: 2px 2px 10px; border-bottom: 1px solid color-mix(in srgb, var(--nx-accent) 18%, transparent);
+    margin-bottom: 10px;
+}
+#nexum-phone .nexum-fr-post {
+    border: 1px solid color-mix(in srgb, var(--nx-muted) 16%, transparent);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--nx-tile) 45%, transparent);
+    padding: 8px 10px; margin-bottom: 8px;
+}
+#nexum-phone .nexum-fr-post.op { border-color: color-mix(in srgb, var(--nx-accent) 35%, transparent); }
+#nexum-phone .nexum-fr-post.mine { background: color-mix(in srgb, var(--nx-accent) 14%, transparent); }
+#nexum-phone .nexum-fr-post-head { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+#nexum-phone .nexum-fr-avatar {
+    flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%;
+    overflow: hidden; display: grid; place-items: center;
+    background: linear-gradient(150deg, color-mix(in srgb, var(--nx-accent) 40%, var(--nx-tile)), var(--nx-tile));
+    color: var(--nx-text); font-weight: 700; font-size: 12px;
+}
+#nexum-phone .nexum-fr-avatar img { width: 100%; height: 100%; object-fit: cover; }
+#nexum-phone .nexum-fr-post-author { font-weight: 600; font-size: 13px; color: var(--nx-accent); flex: 1 1 auto; }
+#nexum-phone .nexum-fr-post-time { font-size: 10px; color: var(--nx-muted); }
+#nexum-phone .nexum-fr-post-body { font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; }
+
+/* reply composer */
+#nexum-phone .nexum-fr-reply {
+    flex: 0 0 auto; display: flex; gap: 8px; padding: 8px 10px;
+    border-top: 1px solid color-mix(in srgb, var(--nx-accent) 14%, transparent);
+}
+#nexum-phone .nexum-fr-reply-input {
+    flex: 1 1 auto; background: var(--nx-tile);
+    border: 1px solid color-mix(in srgb, var(--nx-muted) 20%, transparent);
+    border-radius: 16px; padding: 8px 13px; color: var(--nx-text); font: inherit; font-size: 13px; outline: none;
+}
+#nexum-phone .nexum-fr-reply-input:focus { border-color: var(--nx-accent); }
+#nexum-phone .nexum-fr-reply-send {
+    flex: 0 0 auto; width: 36px; height: 36px; border-radius: 50%;
+    border: none; background: var(--nx-accent); color: #fff; cursor: pointer; display: grid; place-items: center;
+}
+
+/* new-thread composer */
+#nexum-phone .nexum-fr-compose { display: flex; flex-direction: column; gap: 9px; padding: 14px; }
+#nexum-phone .nexum-fr-input, #nexum-phone .nexum-fr-textarea {
+    width: 100%; box-sizing: border-box; background: var(--nx-tile);
+    border: 1px solid color-mix(in srgb, var(--nx-muted) 22%, transparent);
+    border-radius: 9px; padding: 9px 11px; color: var(--nx-text); font: inherit; font-size: 14px; outline: none;
+}
+#nexum-phone .nexum-fr-input:focus, #nexum-phone .nexum-fr-textarea:focus { border-color: var(--nx-accent); }
+#nexum-phone .nexum-fr-textarea { resize: vertical; }
+#nexum-phone .nexum-fr-compose .nexum-fr-action { flex: 0 0 auto; align-self: flex-end; padding: 8px 18px; }
+
+/* busy + flash */
+#nexum-phone .nexum-fr-busy {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px; color: var(--nx-muted); font-size: 12px;
+}
+#nexum-phone .nexum-fr-busy span {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--nx-accent);
+    animation: nexum-typing 1.2s infinite ease-in-out;
+}
+#nexum-phone .nexum-fr-busy span:nth-child(2) { animation-delay: 0.18s; }
+#nexum-phone .nexum-fr-busy span:nth-child(3) { animation-delay: 0.36s; }
+#nexum-phone .nexum-fr-flash {
+    margin: 10px 14px; padding: 9px 12px; border-radius: 9px;
+    background: color-mix(in srgb, #ff6b6b 22%, var(--nx-tile));
+    color: var(--nx-text); font-size: 12px; text-align: center;
+}
+@media (prefers-reduced-motion: reduce) { #nexum-phone .nexum-fr-busy span { animation: none; } }
