@@ -149,13 +149,74 @@ export function mountMessages(mountEl, ctx) {
 async function generateReply(ct) {
     const c = stx();
     const userName = c?.name1 || 'the user';
-    const sys = `You are ${ct.name}. Stay fully in character.\n\n${ct.persona}\n\n`
-        + `You are exchanging text messages with ${userName} on a phone. Reply ONLY as ${ct.name}, `
+    let sys = `You are ${ct.name}. Stay fully in character.\n\n${ct.persona}\n\n`;
+
+    // Same-entity bleed: if this contact is a character actually present in the
+    // current main-chat scene, they ARE that character — fold in what they just
+    // witnessed in person, so phone-them knows what room-them knows. This is the
+    // innermost ring of knowledge: private to the two of you, NOT network-visible.
+    if (getSettings().liveBleed !== false && isLiveContact(ct)) {
+        const scene = liveSceneBlock();
+        if (scene) {
+            sys += `You and ${userName} are together in person right now. Here is what is passing `
+                + `between you two, in order (most recent last):\n${scene}\n\n`
+                + `Text as someone living through that very moment — you are aware of it and remember it. `
+                + `Don't recap it back word-for-word; just let it color how you reply. This passed between `
+                + `you two privately, in person — it is not public knowledge and you would not broadcast it.\n\n`;
+        }
+    }
+
+    sys += `You are exchanging text messages with ${userName} on a phone. Reply ONLY as ${ct.name}, `
         + `in a casual texting voice: short, natural, in character. No narration, no asterisk actions, `
         + `no quotation marks wrapping the whole message. Never speak or act for ${userName}.`;
     const msgs = [{ role: 'system', content: sys }];
     for (const m of convMessages(ct)) msgs.push({ role: m.from === 'user' ? 'user' : 'assistant', content: m.text });
     return isolatedGenerate(msgs);
+}
+
+// Is this contact a character present in the live main chat right now?
+// (the active single card, or a member of the active group). Derived, never stored —
+// so it's always correct as you switch chats, and absent cast stay isolated.
+function isLiveContact(ct) {
+    if (!ct) return false;
+    if (ct.source === 'active') return true; // literally the active card
+    const names = presentCharNames();
+    return names.has(String(ct.name || '').trim().toLowerCase());
+}
+
+function presentCharNames() {
+    const c = stx();
+    const names = new Set();
+    if (!c) return names;
+    const card = c.characters?.[c.characterId];
+    if (card?.name) names.add(card.name.toLowerCase());
+    try {
+        if (c.groupId && Array.isArray(c.groups)) {
+            const g = c.groups.find((x) => x.id === c.groupId);
+            for (const m of (g?.members || [])) {
+                const mc = c.characters?.find((x) => x.avatar === m);
+                if (mc?.name) names.add(mc.name.toLowerCase());
+            }
+        }
+    } catch (_) { /* group introspection is best-effort */ }
+    return names;
+}
+
+// A trimmed, bounded slice of the current main-chat scene. Read-only.
+function liveSceneBlock(limit = 8) {
+    const c = stx();
+    if (!c || !Array.isArray(c.chat)) return '';
+    const userName = c.name1 || 'User';
+    const lines = c.chat
+        .filter((m) => m && !m.is_system && typeof m.mes === 'string' && m.mes.trim())
+        .slice(-limit)
+        .map((m) => {
+            const who = m.is_user ? userName : (m.name || 'Them');
+            let text = m.mes.replace(/\s+/g, ' ').trim();
+            if (text.length > 400) text = `${text.slice(0, 400)}…`;
+            return `${who}: ${text}`;
+        });
+    return lines.join('\n');
 }
 
 // ---- small UI helpers ----

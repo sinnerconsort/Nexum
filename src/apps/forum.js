@@ -67,7 +67,7 @@ export function mountForum(mountEl, ctx) {
         const bar = document.createElement('div');
         bar.className = 'nexum-fr-bar';
         bar.appendChild(actionBtn('New thread', 'pen', () => openComposer(board)));
-        bar.appendChild(actionBtn('Summon activity', 'wand-magic-sparkles', async () => {
+        bar.appendChild(actionBtn('Refresh', 'arrows-rotate', async () => {
             await summon(board);
             renderBoard(board);
         }));
@@ -77,7 +77,7 @@ export function mountForum(mountEl, ctx) {
         if (!threads.length) {
             const empty = document.createElement('div');
             empty.className = 'nexum-empty';
-            empty.innerHTML = 'This board is quiet.<br><small>Summon activity, or start a thread.</small>';
+            empty.innerHTML = 'This board is quiet.<br><small>Refresh to see what’s been posted, or start a thread.</small>';
             wrap.appendChild(empty);
         } else {
             for (const t of threads) {
@@ -209,7 +209,7 @@ export function mountForum(mountEl, ctx) {
                 });
             }
         } catch (e) {
-            flash(mountEl, 'Couldn’t summon activity — try again.');
+            flash(mountEl, 'Couldn’t load new posts — try again.');
         } finally {
             busy = false; setBusy(mountEl, false);
         }
@@ -327,7 +327,7 @@ function setBusy(mountEl, on) {
     if (on && !o) {
         o = document.createElement('div');
         o.className = 'nexum-fr-busy';
-        o.innerHTML = '<span></span><span></span><span></span> Summoning…';
+        o.innerHTML = '<span></span><span></span><span></span> Loading…';
         mountEl.appendChild(o);
     } else if (!on && o) { o.remove(); }
 }
