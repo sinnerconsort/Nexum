@@ -20,7 +20,7 @@
 #nexum-backdrop {
     position: fixed;
     top: 0; left: 0;            /* top/left ONLY */
-    width: 100%; height: 100%;
+    width: 100vw; height: 100vh;  /* vw/vh, not % — % height collapses on zero-height body */
     background: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
@@ -34,8 +34,13 @@
 /* ---- Phone shell ---- */
 #nexum-phone {
     position: fixed;
-    top: 50%; left: 50%;                 /* top/left anchor … */
-    transform: translate(-50%, -50%) scale(0.96);  /* … transform only offsets it */
+    /* Center with VIEWPORT units, not %. A % top/left resolves against the
+       containing block (ST's transformed, zero-height body) and collapses to 0,
+       pinning the phone to the top. vh/vw always reference the viewport, so this
+       centers correctly even in the poisoned environment. translate(-50%) is
+       relative to the element's own box and is always safe. */
+    top: 50vh; left: 50vw;
+    transform: translate(-50%, -50%) scale(0.96);
     transform-origin: center;
     width: min(380px, 94vw);
     height: min(760px, 90vh);
