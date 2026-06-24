@@ -12,6 +12,7 @@ export const DEFAULTS = {
     enabled: true,
     activePackId: 'neutral',
     messageTokens: 1000,
+    forumTokens: 1800,
     fab: {
         // top/left ONLY. Never bottom/right (ST's transformed body poisons those).
         top: 96,
