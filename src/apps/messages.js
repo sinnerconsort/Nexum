@@ -159,15 +159,29 @@ export function mountMessages(mountEl, ctx) {
             try {
                 const reply = stripReasoning(await generateReply(ct, thread)) || '…';
                 typing.remove();
-                thread.push({ from: 'char', text: reply, ts: Date.now() });
+                const parts = splitReply(reply);
+                // Persist every part up front so they survive navigating away mid-reveal.
+                for (const p of parts) thread.push({ from: 'char', text: p, ts: Date.now() });
                 saveSettings();
-                if (view === 'thread' && activeId === ct.id) {
-                    scroll.appendChild(bubble({ from: 'char', text: reply }));
-                    scrollDown(scroll);
+
+                const looking = () => isPhoneOpen() && view === 'thread' && activeId === ct.id;
+                if (looking()) {
+                    // Reveal bubbles one at a time, with a short typing beat between —
+                    // so a multi-paragraph reply trickles in like real texts.
+                    for (let i = 0; i < parts.length; i++) {
+                        if (i > 0) {
+                            const t = typingEl();
+                            scroll.appendChild(t); scrollDown(scroll);
+                            await delay(staggerFor(parts[i]));
+                            t.remove();
+                        }
+                        if (!looking()) break;
+                        scroll.appendChild(bubble({ from: 'char', text: parts[i] }));
+                        scrollDown(scroll);
+                    }
                 }
-                // Notify only if the user isn't looking at this thread right now.
-                if (!isPhoneOpen() || view !== 'thread' || activeId !== ct.id) {
-                    notify(`${ct.name}: ${previewLine(reply)}`, { app: 'messages' });
+                if (!looking()) {
+                    notify(`${ct.name}: ${previewLine(parts[0] || reply)}`, { app: 'messages' });
                 }
             } catch (e) {
                 typing.remove();
@@ -229,6 +243,12 @@ function typingEl() {
     return t;
 }
 function scrollDown(el) { requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; }); }
+function splitReply(text) {
+    const parts = String(text || '').split(/\n\s*\n+/).map((s) => s.trim()).filter(Boolean);
+    return parts.length ? parts : [String(text || '').trim() || '…'];
+}
+function staggerFor(part) { return Math.min(1100, 300 + (part?.length || 0) * 9); }
+function delay(ms) { return new Promise((r) => setTimeout(r, ms)); }
 function initial(name) { return (String(name || '?').trim()[0] || '?').toUpperCase(); }
 function previewLine(s) { const t = String(s || '').replace(/\s+/g, ' ').trim(); return t.length > 42 ? `${t.slice(0, 42)}…` : t; }
 function esc(s) { const d = document.createElement('div'); d.textContent = String(s ?? ''); return d.innerHTML; }
