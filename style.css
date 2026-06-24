@@ -447,3 +447,124 @@
     color: var(--nx-text);
     font-variant-numeric: tabular-nums;
 }
+
+/* ---- Messages ---- */
+#nexum-phone .nexum-msg-list { display: flex; flex-direction: column; }
+#nexum-phone .nexum-msg-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    background: none;
+    border: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--nx-muted) 14%, transparent);
+    cursor: pointer;
+    text-align: left;
+    color: var(--nx-text);
+    font: inherit;
+}
+#nexum-phone .nexum-msg-row:active { background: color-mix(in srgb, var(--nx-accent) 10%, transparent); }
+#nexum-phone .nexum-msg-avatar {
+    flex: 0 0 auto;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(150deg, color-mix(in srgb, var(--nx-accent) 40%, var(--nx-tile)), var(--nx-tile));
+    color: var(--nx-text);
+    font-weight: 700;
+    font-size: 18px;
+}
+#nexum-phone .nexum-msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
+#nexum-phone .nexum-msg-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+#nexum-phone .nexum-msg-name { font-weight: 600; font-size: 14px; }
+#nexum-phone .nexum-msg-preview {
+    font-size: 12px;
+    color: var(--nx-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* thread */
+#nexum-phone .nexum-msg-thread { display: flex; flex-direction: column; height: 100%; }
+#nexum-phone .nexum-msg-scroll {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 12px 6px;
+}
+#nexum-phone .nexum-bubble {
+    max-width: 78%;
+    padding: 8px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.35;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+#nexum-phone .nexum-bubble.user {
+    align-self: flex-end;
+    background: var(--nx-accent);
+    color: #fff;
+    border-bottom-right-radius: 5px;
+}
+#nexum-phone .nexum-bubble.char {
+    align-self: flex-start;
+    background: var(--nx-tile);
+    color: var(--nx-text);
+    border-bottom-left-radius: 5px;
+}
+#nexum-phone .nexum-bubble.err { background: color-mix(in srgb, #ff6b6b 30%, var(--nx-tile)); font-style: italic; }
+
+#nexum-phone .nexum-bubble.typing { display: inline-flex; gap: 4px; padding: 12px 14px; }
+#nexum-phone .nexum-bubble.typing span {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--nx-muted);
+    animation: nexum-typing 1.2s infinite ease-in-out;
+}
+#nexum-phone .nexum-bubble.typing span:nth-child(2) { animation-delay: 0.18s; }
+#nexum-phone .nexum-bubble.typing span:nth-child(3) { animation-delay: 0.36s; }
+@keyframes nexum-typing { 0%, 60%, 100% { opacity: 0.3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+
+#nexum-phone .nexum-msg-inputbar {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-top: 1px solid color-mix(in srgb, var(--nx-accent) 14%, transparent);
+}
+#nexum-phone .nexum-msg-input {
+    flex: 1 1 auto;
+    background: var(--nx-tile);
+    border: 1px solid color-mix(in srgb, var(--nx-muted) 20%, transparent);
+    border-radius: 18px;
+    padding: 9px 14px;
+    color: var(--nx-text);
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+}
+#nexum-phone .nexum-msg-input:focus { border-color: var(--nx-accent); }
+#nexum-phone .nexum-msg-send {
+    flex: 0 0 auto;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: var(--nx-accent);
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+#nexum-phone .nexum-msg-send:disabled { opacity: 0.5; }
+
+@media (prefers-reduced-motion: reduce) {
+    #nexum-phone .nexum-bubble.typing span { animation: none; }
+}

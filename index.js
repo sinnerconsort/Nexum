@@ -13,6 +13,7 @@ import { createFab, fabInDom } from './src/fab.js';
 import { initNotifications, notify, clearNotifications } from './src/notifications.js';
 import { openApp, registerApp } from './src/router.js';
 import { mountKnucklebones } from './src/apps/knucklebones.js';
+import { mountMessages } from './src/apps/messages.js';
 
 let keepaliveTimer = null;
 
@@ -29,6 +30,7 @@ async function initUI() {
     initNotifications(getStrip(), (appName) => openApp(appName, { label: appName }));
     // Games icon -> knucklebones (only game for now; a picker can come later).
     registerApp('games', (mountEl) => mountKnucklebones(mountEl));
+    registerApp('messages', mountMessages);
     createFab();
     await applyActivePack();
     startKeepalive();
