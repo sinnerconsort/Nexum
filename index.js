@@ -11,7 +11,8 @@ import {
 } from './src/chassis.js';
 import { createFab, fabInDom } from './src/fab.js';
 import { initNotifications, notify, clearNotifications } from './src/notifications.js';
-import { openApp } from './src/router.js';
+import { openApp, registerApp } from './src/router.js';
+import { mountKnucklebones } from './src/apps/knucklebones.js';
 
 let keepaliveTimer = null;
 
@@ -26,6 +27,8 @@ async function applyActivePack() {
 async function initUI() {
     buildPhone();
     initNotifications(getStrip(), (appName) => openApp(appName, { label: appName }));
+    // Games icon -> knucklebones (only game for now; a picker can come later).
+    registerApp('games', (mountEl) => mountKnucklebones(mountEl));
     createFab();
     await applyActivePack();
     startKeepalive();
