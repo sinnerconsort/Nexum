@@ -78,6 +78,11 @@ function addSettingsPanel() {
                     <input type="checkbox" id="nexum-enabled" ${s.enabled ? 'checked' : ''}>
                     <span>Enable Nexum</span>
                 </label>
+                <label class="checkbox_label">
+                    <input type="checkbox" id="nexum-livebleed" ${s.liveBleed ? 'checked' : ''}>
+                    <span>Scene-aware DMs</span>
+                </label>
+                <small class="nexum-settings-note">When on, a contact who is present in the current chat texts as someone who knows what just happened in person. Stays private — never reaches the forum.</small>
                 <small class="nexum-settings-note">Active pack: <code>${s.activePackId}</code></small>
                 <div class="menu_button" id="nexum-open-btn" style="margin-top:8px;">Open phone</div>
             </div>
@@ -92,6 +97,11 @@ function addSettingsPanel() {
         saveSettings();
         if (now && !was) { try { await initUI(); } catch (e) { err(e); } }
         else if (!now && was) { destroyUI(); }
+    });
+
+    $('#nexum-livebleed').on('change', function () {
+        getSettings().liveBleed = $(this).prop('checked');
+        saveSettings();
     });
 
     $('#nexum-open-btn').on('click', () => {
