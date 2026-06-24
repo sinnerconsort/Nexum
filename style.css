@@ -102,6 +102,73 @@
     color: var(--nx-muted);
 }
 
+/* ---- Notification strip ---- */
+#nexum-phone .nexum-notif {
+    flex: 0 0 auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 22px;
+    padding: 0 18px 2px;
+    overflow: hidden;
+}
+/* idle: a short, even thin line, centered */
+#nexum-phone .nexum-notif-line {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 84px; height: 3px;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--nx-accent) 55%, transparent);
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+#nexum-phone .nexum-notif-dot,
+#nexum-phone .nexum-notif-text,
+#nexum-phone .nexum-notif-count {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+#nexum-phone .nexum-notif-dot {
+    flex: 0 0 auto;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--nx-accent);
+    box-shadow: 0 0 8px var(--nx-glow);
+}
+#nexum-phone .nexum-notif-text {
+    flex: 1 1 auto;
+    font-size: 12px;
+    color: var(--nx-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#nexum-phone .nexum-notif-count {
+    flex: 0 0 auto;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--nx-bg);
+    background: var(--nx-accent);
+    border-radius: 9px;
+    padding: 1px 6px;
+}
+/* active: hide the line, reveal dot + text, flash the dot */
+#nexum-phone .nexum-notif.has-notif { cursor: pointer; }
+#nexum-phone .nexum-notif.has-notif .nexum-notif-line { opacity: 0; }
+#nexum-phone .nexum-notif.has-notif .nexum-notif-dot,
+#nexum-phone .nexum-notif.has-notif .nexum-notif-text,
+#nexum-phone .nexum-notif.has-notif .nexum-notif-count { opacity: 1; }
+#nexum-phone .nexum-notif.has-notif .nexum-notif-dot {
+    animation: nexum-notif-blink 1.1s ease-in-out infinite;
+}
+#nexum-phone .nexum-notif.slide .nexum-notif-text {
+    animation: nexum-notif-in 0.28s ease;
+}
+@keyframes nexum-notif-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+@keyframes nexum-notif-in { from { transform: translateX(-6px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
 /* ---- Viewport ---- */
 #nexum-phone .nexum-viewport {
     flex: 1 1 auto;
@@ -230,6 +297,8 @@
     #nexum-phone { transition: opacity 0.12s ease; transform: translate(-50%, -50%); }
     #nexum-phone.open { transform: translate(-50%, -50%); }
     #nexum-fab { animation: none; }
+    #nexum-phone .nexum-notif.has-notif .nexum-notif-dot { animation: none; }
+    #nexum-phone .nexum-notif.slide .nexum-notif-text { animation: none; }
 }
 
 #extensions_settings2 .nexum-settings-note { display: block; margin-top: 6px; color: var(--nx-muted, #8a8a94); }

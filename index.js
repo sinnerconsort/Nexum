@@ -6,10 +6,12 @@ import { EXT_NAME, log, err, toast } from './src/config.js';
 import { getSettings, saveSettings } from './src/state.js';
 import { loadPack, applySkin } from './src/packLoader.js';
 import {
-    buildPhone, getPhoneRoot, renderPack, togglePhone,
+    buildPhone, getPhoneRoot, getStrip, renderPack, togglePhone,
     openPhone, closePhone, phoneInDom,
 } from './src/chassis.js';
 import { createFab, fabInDom } from './src/fab.js';
+import { initNotifications, notify, clearNotifications } from './src/notifications.js';
+import { openApp } from './src/router.js';
 
 let keepaliveTimer = null;
 
@@ -23,6 +25,7 @@ async function applyActivePack() {
 
 async function initUI() {
     buildPhone();
+    initNotifications(getStrip(), (appName) => openApp(appName, { label: appName }));
     createFab();
     await applyActivePack();
     startKeepalive();
@@ -109,12 +112,18 @@ jQuery(async () => {
         await initUI();
         registerSlash();
 
+        // One welcome notification per page load, so the banner is visible the
+        // first time you open the phone. Tap it to clear it to the idle line.
+        notify('Nexum online.', { app: null });
+
         // Expose for mobile testing via address bar (no console needed).
         window.Nexum = {
             open: openPhone,
             close: closePhone,
             toggle: togglePhone,
             reloadPack: applyActivePack,
+            notify,                 // Nexum.notify('hello', { app: 'messages' })
+            clearNotifications,
             settings: getSettings,
         };
 
